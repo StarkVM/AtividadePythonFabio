@@ -1,5 +1,23 @@
 import os
 import sys
+from conexao import criar_conexao
+conexao = criar_conexao()
+cursor = conexao.cursor()
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS alunos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        serie INTEGER NOT NULL,
+        faltas DECIMAL NOT NULL DEFAULT 0,
+        nota1 DECIMAL DEFAULT 0,
+        nota2 DECIMAL DEFAULT 0,
+        nota3 DECIMAL DEFAULT 0,
+        nota4 DECIMAL DEFAULT 0
+    )
+""")
+conexao.commit()
+
 def menu():
     print ("--- Menu ---")
     print("1. Cadastrar Aluno")
@@ -15,7 +33,7 @@ def menu():
         case "1":
             cadastroAlunos()
         case "2":
-            cadastroDados()
+            Atualizar_dados()
         case "3":
             removerPorId()
         case "4":
@@ -43,24 +61,29 @@ def cadastroAlunos(nome, serie):
     print('\n[1] 1º Série   [2] 2º Série   [3] 3º Série')
     serie = int(input('Insira a sua série: '))
     '''XXXXXXX(nome, serie)'''
+    cursor.execute("INSERT INTO usuarios (nome, serie) VALUES (?, ?)", (nome, serie))
 
 def removerPorId():
     id = input("Digite o id do aluno que deseja remover: ")
     
-    """XXXXXXX(id)"""
+    cursor.execute("DELETE FROM alunos WHERE id = ?", (id))
     
 def procurarPorId():
     id = input("Digite o id do aluno que deseja buscar: ")
 
-    """XXXXXXX(id)"""
+    cursor.execute("SELECT * FROM alunos WHERE id = ?", (id))
+    for linha in cursor.fetchall():
+            print(linha)
 
-def procurarPorSerie
+def procurarPorSerie():
     serie = input("Digite a serie que deseja buscar: ")
     if serie > 3 or serie < 1:
          print("Serie invalida")
          menu()
     else:
-         '''XXXXX(serie)'''
+         cursor.execute("SELECT * FROM alunos WHERE serie = ?", (serie))
+         for linha in cursor.fetchall():
+            print(linha)
 
 #O MÉTODO A SEGUIR RETORNA Uma lista contendo [O ID(INT), UMA LISTA DE NOTAS(FLOAT) E O NÚMERO DE FALTAS(INT)]
 def cadastroDados():
@@ -91,4 +114,9 @@ def cadastroDados():
         except ValueError:
             print("Número de faltas inválido. Não alterado.")
 
-    return id_estudante, notas, faltas
+    return cursor.execute("UPDATE usuarios SET nota1 = ?, nota2 = ?, nota3 = ?, nota4 = ?, faltas = ? WHERE id = ?", (nota[0], nota[1],nota[2],nota[3], faltas, id_estudante))
+
+cursor.close()
+conexao.close()
+
+
