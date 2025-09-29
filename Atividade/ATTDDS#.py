@@ -15,7 +15,7 @@ def menu():
         case "1":
             cadastroAlunos()
         case "2":
-            Atualizar_dados()
+            cadastroDados()
         case "3":
             removerPorId()
         case "4":
@@ -62,3 +62,33 @@ def procurarPorSerie
     else:
          '''XXXXX(serie)'''
 
+#O MÉTODO A SEGUIR RETORNA Uma lista contendo [O ID(INT), UMA LISTA DE NOTAS(FLOAT) E O NÚMERO DE FALTAS(INT)]
+def cadastroDados():
+    notas = []
+    id_estudante = int(input("Digite o ID do estudante: "))
+
+    #GARANTE QUE AS NOTAS ESTEJAM ENTRE 0 E 10
+    for i in range(1,4):
+        while True:
+            try:
+                nota = float(input(f"Digite a {i}° nota: "))
+                while nota < 0 or nota > 10:
+                    print("Nota inválida. Digite uma nota entre 0 e 10.")
+                    nota = float(input(f"Digite a {i}° nota: "))
+                notas.append(nota)
+                break
+            except ValueError:
+                print("Algo na inserção das notas deu errado, digite um valor válido.")
+
+    #GARANTE QUE O NÚMERO DE FALTAS SEJA INTEIRO E NÃO NEGATIVO
+    while True:
+        try:
+            faltas = int(input("Digite o número de faltas: "))
+            if faltas < 0:
+                print("Número de faltas inválido. Digite um número não negativo.")
+            else:
+                break
+        except ValueError:
+            print("Número de faltas inválido. Não alterado.")
+
+    return id_estudante, notas, faltas
