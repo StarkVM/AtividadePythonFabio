@@ -45,8 +45,21 @@ def removerPorId():
 def procurarPorId():
     id = input("Digite o id do aluno que deseja buscar: ")
     cursor.execute("SELECT * FROM alunos WHERE id = ?", (id,))
-    for linha in cursor.fetchall():
-        print(linha)
+    resultado = cursor.fetchone()
+
+    if resultado:
+        print("\n--- Dados do Aluno ---")
+        print(f"ID: {resultado[0]}")
+        print(f"Nome: {resultado[1]}")
+        print(f"Série: {resultado[2]}")
+        print(f"Faltas: {resultado[3]}")
+        print(f"Nota 1: {resultado[4]}")
+        print(f"Nota 2: {resultado[5]}")
+        print(f"Nota 3: {resultado[6]}")
+        print(f"Nota 4: {resultado[7]}")
+    else:
+        print("Aluno não encontrado.")
+
 
 
 def procurarPorSerie():
@@ -55,8 +68,22 @@ def procurarPorSerie():
         print("Série inválida")
     else:
         cursor.execute("SELECT * FROM alunos WHERE serie = ?", (serie,))
-        for linha in cursor.fetchall():
-            print(linha)
+        alunos = cursor.fetchall()
+        
+        if not alunos:
+            print("Nenhum aluno encontrado para essa série.")
+        else:
+            print(f"\n--- Alunos da {serie}ª Série ---")
+            for aluno in alunos:
+                print(f"\nID: {aluno[0]}")
+                print(f"Nome: {aluno[1]}")
+                print(f"Série: {aluno[2]}")
+                print(f"Faltas: {aluno[3]}")
+                print(f"Nota 1: {aluno[4]}")
+                print(f"Nota 2: {aluno[5]}")
+                print(f"Nota 3: {aluno[6]}")
+                print(f"Nota 4: {aluno[7]}")
+
 
 
 # O MÉTODO A SEGUIR RETORNA Uma lista contendo [O ID(INT), UMA LISTA DE NOTAS(FLOAT) E O NÚMERO DE FALTAS(INT)]
@@ -99,7 +126,7 @@ def cadastroDados():
 
 def menu():
     while True:
-        print("--- Menu ---")
+        print("\n--- Menu ---")
         print("1. Cadastrar Aluno")
         print("2. Atualizar Dados do Aluno")
         print("3. Remover Aluno")
@@ -108,6 +135,7 @@ def menu():
         print("6. Sair")
 
         escolha = input("Selecione a ação desejada: ")
+        os.system('cls' if os.name == 'nt' else 'clear')
 
         match escolha:
             case "1":
