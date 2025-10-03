@@ -34,13 +34,21 @@ def cadastroAlunos():
     conexao.commit()
     print("Aluno cadastrado com sucesso!\n")
 
+def verificaSeIdExiste(id):
+    cursor.execute("SELECT * FROM alunos WHERE id = ?", (id,))
+    resultado = cursor.fetchone()
+    if resultado:
+        return True
 
 def removerPorId():
-    id = input("Digite o id do aluno que deseja remover: ")
-    cursor.execute("DELETE FROM alunos WHERE id = ?", (id,))
-    conexao.commit()
-    print("Aluno removido com sucesso!\n")
-
+    id_estudante = input("Digite o id do aluno que deseja remover: ")
+    if(verificaSeIdExiste(id_estudante)):
+        cursor.execute("DELETE FROM alunos WHERE id = ?", (id_estudante,))
+        conexao.commit()
+        print("Aluno removido com sucesso!\n")
+    else:
+        print("Este id não existe.")
+        removerPorId()
 
 def procurarPorId():
     id = input("Digite o id do aluno que deseja buscar: ")
@@ -59,7 +67,6 @@ def procurarPorId():
         print(f"Nota 4: {resultado[7]}")
     else:
         print("Aluno não encontrado.")
-
 
 
 def procurarPorSerie():
@@ -91,37 +98,41 @@ def cadastroDados():
     notas = []
     id_estudante = int(input("Digite o ID do estudante: "))
 
-    # Garante que as notas estejam entre 0 e 10
-    for i in range(1, 5):
+    if(verificaSeIdExiste(id_estudante)):
+        # Garante que as notas estejam entre 0 e 10
+        for i in range(1, 5):
+            while True:
+                try:
+                    nota = float(input(f"Digite a {i}° nota: "))
+                    while nota < 0 or nota > 10:
+                        print("Nota inválida. Digite uma nota entre 0 e 10.")
+                        nota = float(input(f"Digite a {i}° nota: "))
+                    notas.append(nota)
+                    break
+                except ValueError:
+                    print("Algo na inserção das notas deu errado, digite um valor válido.")
+
+        # Garante que o número de faltas seja inteiro e não negativo
         while True:
             try:
-                nota = float(input(f"Digite a {i}° nota: "))
-                while nota < 0 or nota > 10:
-                    print("Nota inválida. Digite uma nota entre 0 e 10.")
-                    nota = float(input(f"Digite a {i}° nota: "))
-                notas.append(nota)
-                break
+                faltas = int(input("Digite o número de faltas: "))
+                if faltas < 0:
+                    print("Número de faltas inválido. Digite um número não negativo.")
+                else:
+                    break
             except ValueError:
-                print("Algo na inserção das notas deu errado, digite um valor válido.")
+                print("Número de faltas inválido. Não alterado.")
 
-    # Garante que o número de faltas seja inteiro e não negativo
-    while True:
-        try:
-            faltas = int(input("Digite o número de faltas: "))
-            if faltas < 0:
-                print("Número de faltas inválido. Digite um número não negativo.")
-            else:
-                break
-        except ValueError:
-            print("Número de faltas inválido. Não alterado.")
-
-    cursor.execute("""
-        UPDATE alunos 
-        SET nota1 = ?, nota2 = ?, nota3 = ?, nota4 = ?, faltas = ? 
-        WHERE id = ?
-    """, (notas[0], notas[1], notas[2], notas[3], faltas, id_estudante))
-    conexao.commit()
-    print("Dados do aluno atualizados!\n")
+        cursor.execute("""
+            UPDATE alunos 
+            SET nota1 = ?, nota2 = ?, nota3 = ?, nota4 = ?, faltas = ? 
+            WHERE id = ?
+        """, (notas[0], notas[1], notas[2], notas[3], faltas, id_estudante))
+        conexao.commit()
+        print("Dados do aluno atualizados!\n")
+    else:
+        print("ESTE ID NÃO EXISTE!")
+        cadastroDados()
 
 
 def menu():
@@ -158,7 +169,4 @@ def menu():
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print("Selecione uma opção válida\n")
 
-
 menu()
-
-
